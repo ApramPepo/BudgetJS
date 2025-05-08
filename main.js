@@ -1,10 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
     class Budget {
-        #exp //to store expenses
+        #exp; // Private field to store expenses
+        #storageKey = "expenses"; // Key for localStorage
 
         constructor() {
-            this.#exp = [];
+            this.#exp = this.#loadExp();
         }
+
+        #loadExp() {
+            try {
+                const expenses = localStorage.getItem(this.#storageKey);
+                return expenses ? JSON.parse(expenses) : [];
+            } catch (e) {
+                console.error("Error parsing expenses:", e);
+                return [];
+            }
+        }
+
+        #saveExp() {
+            localStorage.setItem(this.#storageKey, JSON.stringify(this.#exp));
+        }
+
         addExp(description, amount) {
             const expense = {
                 id: Date.now(),
@@ -12,11 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 amount: parseFloat(amount)
             };
             this.#exp.push(expense);
+            this.#saveExp(); // Save to localStorage
             return expense;
         }
 
         removeExp(id) {
             this.#exp = this.#exp.filter(expense => expense.id !== id);
+            this.#saveExp(); // Save to localStorage
         }
 
         getExp() {
@@ -37,7 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById("list");
 
     if (!budgetForm || !desc || !amount || !total || !list) {
-        alert("Error: One or more elements not found.");
+        console.error("One or more Element is missing:", {
+            budgetForm,
+            desc,
+            amount,
+            total,
+            list
+        });
         return;
     }
 
@@ -45,12 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
         list.innerHTML = "";
         const expenses = tracker.getExp();
         expenses.forEach(expense => {
-            const li = document.createElement('li');
-            li.innerHTML = `<span>${expense.description}: $${expense.amount.toFixed(2)}</span>
-            <button data-id="${expense.id}">remove</button>`;
+            const li = document.createElement("li");
+            li.innerHTML = `
+          <span>${expense.description}: $${expense.amount.toFixed(2)}</span>
+          <button data-id="${expense.id}">remove</button>
+        `;
             list.appendChild(li);
         });
-
         total.textContent = tracker.getTotal();
     }
 
@@ -65,13 +90,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    list.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
+    list.addEventListener("click", (e) => {
+        if (e.target.tagName === "BUTTON") {
             const id = Number(e.target.dataset.id);
             tracker.removeExp(id);
             renderingDOM();
         }
-    })
+    });
 
     renderingDOM();
-})
+});
