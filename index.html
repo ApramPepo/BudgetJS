@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Budget Tracker</title>
+        <link rel="stylesheet" href="main.css">
+        <script src="main.js" defer></script>
+    </head>
+    <body>
+        <section class="container">
+            <h1>Budget Tracker</h1>
+            <form id="budgetForm">
+                <input type="text" id="desc" required
+                    placeholder="Enter expense description">
+                <input type="number" id="amount" required
+                    placeholder="Enter amount" min="0" step="0.01">
+                <button type="submit">Add</button>
+            </form>
+            <div class="summary">
+                <h2>Total spent: $<span id="spent">0.00</span></h2>
+            </div>
+            <ul id="list"></ul>
+        </section>
+    </body>
+</html>
